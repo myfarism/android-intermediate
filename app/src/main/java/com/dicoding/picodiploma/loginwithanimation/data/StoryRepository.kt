@@ -35,7 +35,7 @@ class StoryRepository private constructor(
     suspend fun getStoriesWithLocation(token: String): List<ListStoryItem> {
         val response = apiService.getStoriesWithLocation(token)
         if (response.error == false && response.listStory != null) {
-            return response.listStory.filterNotNull() // Menghindari elemen null
+            return response.listStory.filterNotNull()
         } else {
             throw Exception("Failed to fetch stories: ${response.message}")
         }

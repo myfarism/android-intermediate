@@ -22,18 +22,15 @@ class StoryAdapter : PagingDataAdapter<ListStoryItem, StoryAdapter.StoryViewHold
         private val description: TextView = view.findViewById(R.id.tv_description)
         private val image: ImageView = view.findViewById(R.id.img_event_logo)
 
-        // Bind the story data to the view
         fun bind(story: ListStoryItem) {
             name.text = story.name
             description.text = story.description
 
-            // Menggunakan Glide untuk menampilkan gambar dengan placeholder
             Glide.with(itemView.context)
-                .load(story.photoUrl)  // Gambar utama yang akan dimuat
-                .placeholder(R.drawable.image_placeholder) // Gambar placeholder
+                .load(story.photoUrl)
+                .placeholder(R.drawable.image_placeholder)
                 .into(image)
 
-            // Set click listener to navigate to StoryDetailActivity
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, StoryDetailActivity::class.java)
                 intent.putExtra(StoryDetailActivity.EXTRA_STORY_ID, story.id) // Pass the Story ID
@@ -48,7 +45,7 @@ class StoryAdapter : PagingDataAdapter<ListStoryItem, StoryAdapter.StoryViewHold
     }
 
     override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-        val story = getItem(position) // Mengambil item dari PagingData
+        val story = getItem(position)
         story?.let {
             holder.bind(it)
         }
@@ -57,11 +54,11 @@ class StoryAdapter : PagingDataAdapter<ListStoryItem, StoryAdapter.StoryViewHold
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
             override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
-                return oldItem.id == newItem.id // Membandingkan ID unik
+                return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
-                return oldItem == newItem // Membandingkan seluruh konten item
+                return oldItem == newItem
             }
         }
     }

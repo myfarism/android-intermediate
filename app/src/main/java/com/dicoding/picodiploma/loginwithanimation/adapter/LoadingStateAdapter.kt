@@ -40,7 +40,6 @@ class LoadingStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<Load
                     binding.errorMsg.text = loadState.error.localizedMessage
                 }
                 else -> {
-                    // Menyembunyikan semua elemen jika tidak ada loading atau error
                     binding.progressBar.isVisible = false
                     binding.retryButton.isVisible = false
                     binding.errorMsg.isVisible = false

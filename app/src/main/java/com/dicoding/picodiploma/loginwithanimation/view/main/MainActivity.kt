@@ -95,14 +95,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.recyclerView.adapter = storyAdapter.withLoadStateFooter(
             footer = LoadingStateAdapter {
-                // Cek apakah retry dipanggil
                 Log.d("LoadState", "Retrying...")
                 storyAdapter.retry()
             }
         )
 
         storyAdapter.addLoadStateListener { loadState ->
-            // Debugging untuk memeriksa load state
             Log.d("LoadState", "LoadState: $loadState")
 
             binding.progressBar.visibility = if (loadState.refresh is LoadState.Loading) View.VISIBLE else View.GONE
