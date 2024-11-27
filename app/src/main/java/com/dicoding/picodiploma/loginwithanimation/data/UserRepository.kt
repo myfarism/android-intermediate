@@ -1,6 +1,5 @@
 package com.dicoding.picodiploma.loginwithanimation.data
 
-import android.util.Log
 import com.dicoding.picodiploma.loginwithanimation.data.api.ApiService
 import com.dicoding.picodiploma.loginwithanimation.data.api.RegisterResponse
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel

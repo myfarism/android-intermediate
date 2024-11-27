@@ -23,16 +23,6 @@ class MainViewModel(
         return userRepository.getSession().asLiveData()
     }
 
-    fun getStories(): LiveData<ListResponse> = liveData {
-        emit(ListResponse(error = false, message = "Loading..."))
-        try {
-            val stories = storyRepository.getStories()
-            emit(stories)
-        } catch (e: Exception) {
-            emit(ListResponse(error = true, message = "Failed to fetch stories: ${e.message}"))
-        }
-    }
-
     fun logout() {
         viewModelScope.launch {
             userRepository.logout()

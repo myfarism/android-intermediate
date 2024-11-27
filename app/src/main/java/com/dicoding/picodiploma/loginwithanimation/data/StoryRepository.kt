@@ -21,17 +21,6 @@ class StoryRepository private constructor(
     private val userPreference: UserPreference
 ) {
 
-    suspend fun getStories(): ListResponse {
-        val token = userPreference.getSession().first().token
-        Log.d("StoryRepository", "Token used for API call: $token")
-
-        return if (token.isNotEmpty()) {
-            apiService.getStories("Bearer $token")
-        } else {
-            ListResponse(error = true, message = "Token is missing")
-        }
-    }
-
     suspend fun uploadStory(description: RequestBody, photo: MultipartBody.Part): AddStoryResponse {
         val token = userPreference.getSession().first().token
         Log.d("StoryRepository", "Token used for upload: $token")
