@@ -1,5 +1,7 @@
 package com.dicoding.picodiploma.loginwithanimation.data.api
 
+
+import com.dicoding.picodiploma.loginwithanimation.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -7,7 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://story-api.dicoding.dev/v1/"
+    private val baseURL = BuildConfig.BASE_URL
 
     fun getClient(token: String? = null): ApiService {
         val clientBuilder = OkHttpClient.Builder()
@@ -34,10 +36,11 @@ object RetrofitClient {
         }
 
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseURL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(clientBuilder.build())
             .build()
             .create(ApiService::class.java)
     }
+
 }

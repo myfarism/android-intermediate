@@ -1,8 +1,10 @@
 package com.dicoding.picodiploma.loginwithanimation.detail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.dicoding.picodiploma.loginwithanimation.data.api.ApiService
@@ -29,12 +31,19 @@ class StoryDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val storyId = intent.getStringExtra(EXTRA_STORY_ID)
+        Log.d("StoryDetailActivity", "Story ID received: $storyId")
+
         if (storyId != null) {
             fetchStoryDetails(storyId)
         } else {
-            Toast.makeText(this, "Story ID is missing", Toast.LENGTH_SHORT).show()
-            finish()
+            showErrorAndFinish("Story ID is missing")
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finish()
+            }
+        })
     }
 
     private fun fetchStoryDetails(storyId: String) {
@@ -46,30 +55,35 @@ class StoryDetailActivity : AppCompatActivity() {
 
                 val response = apiService.getStoryDetail(token, storyId)
                 if (response.isSuccessful) {
-                    val story = response.body()?.story
-                    withContext(Dispatchers.Main) {
-                        binding.progressBar.visibility = View.GONE
-                        binding.storyTitle.text = story?.name
-                        binding.storyDescription.text = story?.description
-                        Glide.with(this@StoryDetailActivity)
-                            .load(story?.photoUrl)
-                            .into(binding.storyImage)
-                    }
+                    response.body()?.story?.let { story ->
+                        Log.d("StoryDetailActivity", "Fetched story with ID: $storyId")  // Log the ID from API response
+                        withContext(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.GONE
+                            binding.storyTitle.text = story.name
+                            binding.storyDescription.text = story.description
+                            Glide.with(this@StoryDetailActivity)
+                                .load(story.photoUrl)
+                                .into(binding.storyImage)
+                        }
+                    } ?: showErrorAndFinish("Story data is empty")
                 } else {
                     withContext(Dispatchers.Main) {
-                        binding.progressBar.visibility = View.GONE
-                        Toast.makeText(this@StoryDetailActivity, "Failed to load story details", Toast.LENGTH_SHORT).show()
-                        finish()
+                        showErrorAndFinish("Failed to load story details")
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(this@StoryDetailActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    finish()
+                    showErrorAndFinish("Error: ${e.message}")
                 }
             }
         }
+    }
+
+
+    private fun showErrorAndFinish(message: String) {
+        binding.progressBar.visibility = View.GONE
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        finish()
     }
 
     companion object {

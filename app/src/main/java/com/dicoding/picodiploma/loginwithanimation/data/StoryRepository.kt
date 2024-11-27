@@ -21,17 +21,6 @@ class StoryRepository private constructor(
     private val userPreference: UserPreference
 ) {
 
-    suspend fun getStories(): ListResponse {
-        val token = userPreference.getSession().first().token
-        Log.d("StoryRepository", "Token used for API call: $token")
-
-        return if (token.isNotEmpty()) {
-            apiService.getStories("Bearer $token")
-        } else {
-            ListResponse(error = true, message = "Token is missing")
-        }
-    }
-
     suspend fun uploadStory(description: RequestBody, photo: MultipartBody.Part): AddStoryResponse {
         val token = userPreference.getSession().first().token
         Log.d("StoryRepository", "Token used for upload: $token")
@@ -46,7 +35,7 @@ class StoryRepository private constructor(
     suspend fun getStoriesWithLocation(token: String): List<ListStoryItem> {
         val response = apiService.getStoriesWithLocation(token)
         if (response.error == false && response.listStory != null) {
-            return response.listStory.filterNotNull() // Menghindari elemen null
+            return response.listStory.filterNotNull()
         } else {
             throw Exception("Failed to fetch stories: ${response.message}")
         }

@@ -10,12 +10,6 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
 
-    fun saveSession(user: UserModel) {
-        viewModelScope.launch {
-            userRepository.saveSession(user)
-        }
-    }
-
     fun login(email: String, password: String) = liveData {
         try {
             val result = userRepository.login(email, password)
