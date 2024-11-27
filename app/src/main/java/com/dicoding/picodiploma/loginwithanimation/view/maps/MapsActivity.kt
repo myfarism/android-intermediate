@@ -33,23 +33,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Setup binding
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Setup ViewModel
         userPreference = UserPreference.getInstance(dataStore)
         val factory = ViewModelFactory.getInstance(this)
         mapsViewModel = ViewModelProvider(this, factory)[MapsViewModel::class.java]
 
-        // Setup Map
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // Fetch stories with location
         fetchStories()
 
-        // Handle back button
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finish()
