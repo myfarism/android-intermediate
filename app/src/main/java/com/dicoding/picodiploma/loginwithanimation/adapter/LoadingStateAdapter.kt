@@ -23,7 +23,6 @@ class LoadingStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<Load
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            // Ketika tombol retry diklik, panggil retry
             binding.retryButton.setOnClickListener { retry.invoke() }
         }
 

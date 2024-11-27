@@ -26,8 +26,11 @@ class StoryAdapter : PagingDataAdapter<ListStoryItem, StoryAdapter.StoryViewHold
         fun bind(story: ListStoryItem) {
             name.text = story.name
             description.text = story.description
+
+            // Menggunakan Glide untuk menampilkan gambar dengan placeholder
             Glide.with(itemView.context)
-                .load(story.photoUrl)  // Load the image
+                .load(story.photoUrl)  // Gambar utama yang akan dimuat
+                .placeholder(R.drawable.image_placeholder) // Gambar placeholder
                 .into(image)
 
             // Set click listener to navigate to StoryDetailActivity
@@ -45,7 +48,7 @@ class StoryAdapter : PagingDataAdapter<ListStoryItem, StoryAdapter.StoryViewHold
     }
 
     override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-        val story = getItem(position) // Use PagingData's getItem() method to get data at the given position
+        val story = getItem(position) // Mengambil item dari PagingData
         story?.let {
             holder.bind(it)
         }
@@ -54,12 +57,13 @@ class StoryAdapter : PagingDataAdapter<ListStoryItem, StoryAdapter.StoryViewHold
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
             override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
-                return oldItem.id == newItem.id // Compare items by their unique IDs
+                return oldItem.id == newItem.id // Membandingkan ID unik
             }
 
             override fun areContentsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
-                return oldItem == newItem // Compare entire contents of the items
+                return oldItem == newItem // Membandingkan seluruh konten item
             }
         }
     }
 }
+
