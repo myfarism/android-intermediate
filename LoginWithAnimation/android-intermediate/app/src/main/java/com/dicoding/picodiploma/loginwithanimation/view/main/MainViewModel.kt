@@ -1,6 +1,5 @@
 package com.dicoding.picodiploma.loginwithanimation.view.main
 
-import androidx.camera.core.CameraEffect
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -12,9 +11,7 @@ import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
 import com.dicoding.picodiploma.loginwithanimation.data.api.ListResponse
 import com.dicoding.picodiploma.loginwithanimation.data.api.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -32,14 +29,9 @@ class MainViewModel(
         }
     }
 
-    val pagedStories: Flow<PagingData<ListStoryItem>> = flow {
-        // Lakukan ini dalam coroutine agar bisa memanggil 'first()' dengan aman
+    val pagedStories: LiveData<PagingData<ListStoryItem>> = liveData {
         val token = userRepository.getSession().first().token
-
-        // Setelah token diperoleh, kita bisa menggunakan token untuk memanggil repository
-        if (token.isNotEmpty()) {
-            // Emit data dari storyRepository
-            emit(storyRepository.getPagedStories("Bearer $token").first()) // Pastikan mengambil data pertama
-        }
+        emitSource(storyRepository.getPagedStories("Bearer $token"))
     }
+
 }

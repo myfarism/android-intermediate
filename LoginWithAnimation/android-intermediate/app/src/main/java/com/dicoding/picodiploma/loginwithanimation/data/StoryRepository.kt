@@ -14,7 +14,6 @@ import com.dicoding.picodiploma.loginwithanimation.data.api.ListResponse
 import com.dicoding.picodiploma.loginwithanimation.data.api.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.view.main.StoryPagingSource
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 class StoryRepository private constructor(
@@ -36,20 +35,20 @@ class StoryRepository private constructor(
     suspend fun getStoriesWithLocation(token: String): List<ListStoryItem> {
         val response = apiService.getStoriesWithLocation(token)
         if (response.error == false && response.listStory != null) {
-            return response.listStory.filterNotNull()
+            return response.listStory.filterNotNull() // Menghindari elemen null
         } else {
             throw Exception("Failed to fetch stories: ${response.message}")
         }
     }
 
-    fun getPagedStories(token: String): Flow<PagingData<ListStoryItem>> {
+    fun getPagedStories(token: String): LiveData<PagingData<ListStoryItem>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = { StoryPagingSource(apiService, token) }
-        ).flow // Menggunakan flow dari Pager
+        ).liveData
     }
 
 
