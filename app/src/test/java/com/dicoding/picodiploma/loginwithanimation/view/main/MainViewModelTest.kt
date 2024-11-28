@@ -2,7 +2,6 @@ package com.dicoding.picodiploma.loginwithanimation.view.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
@@ -15,9 +14,10 @@ import com.dicoding.picodiploma.loginwithanimation.data.StoryRepository
 import com.dicoding.picodiploma.loginwithanimation.data.UserRepository
 import com.dicoding.picodiploma.loginwithanimation.data.api.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
-import com.dicoding.picodiploma.loginwithanimation.getOrAwaitValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -47,6 +47,10 @@ class MainViewModelTest {
 
     private lateinit var mainViewModel: MainViewModel
 
+    private val mockToken = "mock_token_123"
+    private val mockEmail = "testuser@example.com"
+    private val mockUserModel = UserModel(email = mockEmail, token = mockToken, isLogin = true)
+
     @Before
     fun setup() {
         mainViewModel = MainViewModel(userRepository, storyRepository)
@@ -56,18 +60,15 @@ class MainViewModelTest {
     fun `when Get Story Should Not Null and Return Data`() = runTest {
         val dummyStory = DataDummy.generateDummyStoryResponse()
         val data: PagingData<ListStoryItem> = StoryPagingSource.snapshot(dummyStory)
-        val expectedStory = MutableLiveData<PagingData<ListStoryItem>>()
-        expectedStory.value = data
 
-        val mockToken = "mock_token_123"
-        val mockEmail = "testuser@example.com"
-        val mockUserModel = UserModel(email = mockEmail, token = mockToken, isLogin = true)
+        val expectedStoryFlow: Flow<PagingData<ListStoryItem>> = flowOf(data)
+
         val mockSession = flowOf(mockUserModel)
 
         Mockito.`when`(userRepository.getSession()).thenReturn(mockSession)
-        Mockito.`when`(storyRepository.getPagedStories("Bearer $mockToken")).thenReturn(expectedStory)
+        Mockito.`when`(storyRepository.getPagedStories("Bearer $mockToken")).thenReturn(expectedStoryFlow)
 
-        val actualQuote: PagingData<ListStoryItem> = mainViewModel.pagedStories.getOrAwaitValue()
+        val actualQuote: PagingData<ListStoryItem> = mainViewModel.pagedStories.first()
 
         val differ = AsyncPagingDataDiffer(
             diffCallback = StoryAdapter.DIFF_CALLBACK,
@@ -77,25 +78,23 @@ class MainViewModelTest {
         differ.submitData(actualQuote)
 
         Assert.assertNotNull(differ.snapshot())
+
         Assert.assertEquals(dummyStory.size, differ.snapshot().size)
+
         Assert.assertEquals(dummyStory[0], differ.snapshot()[0])
     }
 
     @Test
     fun `when Get Story Empty Should Return No Data`() = runTest {
         val data: PagingData<ListStoryItem> = PagingData.from(emptyList())
-        val expectedStory = MutableLiveData<PagingData<ListStoryItem>>()
-        expectedStory.value = data
+        val expectedStoryFlow: Flow<PagingData<ListStoryItem>> = flowOf(data)
 
-        val mockToken = "mock_token_123"
-        val mockEmail = "testuser@example.com"
-        val mockUserModel = UserModel(email = mockEmail, token = mockToken, isLogin = true)
         val mockSession = flowOf(mockUserModel)
 
         Mockito.`when`(userRepository.getSession()).thenReturn(mockSession)
-        Mockito.`when`(storyRepository.getPagedStories("Bearer $mockToken")).thenReturn(expectedStory)
+        Mockito.`when`(storyRepository.getPagedStories("Bearer $mockToken")).thenReturn(expectedStoryFlow)
 
-        val actualStory: PagingData<ListStoryItem> = mainViewModel.pagedStories.getOrAwaitValue()
+        val actualStory: PagingData<ListStoryItem> = mainViewModel.pagedStories.first()
 
         val differ = AsyncPagingDataDiffer(
             diffCallback = StoryAdapter.DIFF_CALLBACK,
@@ -107,6 +106,8 @@ class MainViewModelTest {
         Assert.assertEquals(0, differ.snapshot().size)
     }
 }
+
+
 
 
 
