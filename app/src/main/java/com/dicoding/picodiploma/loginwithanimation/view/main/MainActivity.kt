@@ -14,6 +14,8 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.adapter.LoadingStateAdapter
 import com.dicoding.picodiploma.loginwithanimation.adapter.StoryAdapter
@@ -126,4 +128,3 @@ class MainActivity : AppCompatActivity() {
         observeStories()  // Memastikan data selalu ter-update
     }
 }
-
